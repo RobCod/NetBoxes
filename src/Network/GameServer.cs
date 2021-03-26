@@ -40,6 +40,7 @@ namespace NetBoxes.Network
 
             _listener.ConnectionRequestEvent += OnConnectionRequest;
             _listener.PeerConnectedEvent += OnPeerConnected;
+            _listener.PeerDisconnectedEvent += OnPeerDisconnected;
 
             _listener.NetworkReceiveEvent += OnNetworkReceive;
 
@@ -80,6 +81,16 @@ namespace NetBoxes.Network
                 PlayerStatePacket statePacket = PlayerStatePacket.FromPlayerState(pair.Key, pair.Value);
                 peer.Send(_packetProcessor.Write(statePacket), DeliveryMethod.ReliableOrdered);
             }
+        }
+        
+        private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo) {
+            Debug.WriteLine(disconnectInfo.Reason.ToString() + " from {0}!", peer.EndPoint);
+            _players.Remove(peer.Id);
+
+            var players = Context.GameState.Players;
+            var players2 = (from li in players where li.PeerId == peer.Id select li).FirstOrDefault();
+            players.Remove(players2);
+
         }
 
         private void OnPlayerInputPacketReceive(PlayerInputPacket inputPacket, NetPeer peer)

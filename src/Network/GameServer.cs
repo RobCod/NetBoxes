@@ -87,9 +87,9 @@ namespace NetBoxes.Network
             Debug.WriteLine(disconnectInfo.Reason.ToString() + " from {0}!", peer.EndPoint);
             _players.Remove(peer.Id);
 
-            var players = Context.GameState.Players;
-            var players2 = (from li in players where li.PeerId == peer.Id select li).FirstOrDefault();
-            players.Remove(players2);
+            var playersList = Context.GameState.Players;
+            var disconnectedPlayer = (from li in playersList where li.PeerId == peer.Id select li).FirstOrDefault();
+            playersList.Remove(disconnectedPlayer);
 
         }
 
